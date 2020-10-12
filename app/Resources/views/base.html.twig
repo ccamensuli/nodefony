@@ -19,14 +19,14 @@
     </title>
     {% block stylesheets %}
       <!-- WEBPACK BUNDLE -->
-      <link rel="stylesheet" href="{{CDN('stylesheet')}}/app/css/app.css"/>
+      <link rel="stylesheet" href="{{CDN('stylesheet')}}/app/assets/css/app.css"/>
 {% endblock %}
   </head>
   <body>
     {% block body %}{% endblock %}
     {% block javascripts %}
       <!-- WEBPACK BUNDLE -->
-      <script type="text/javascript" src="{{CDN('javascript')}}/app/js/app.js"></script>
+      <script type="text/javascript" src="{{CDN('javascript')}}/app/assets/js/app.js"></script>
 {% endblock %}
   </body>
 </html>

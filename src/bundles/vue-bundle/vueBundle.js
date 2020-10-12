@@ -9,7 +9,8 @@
  *	@param {class} container
  *
  */
-module.exports = class vueBundle  extends nodefony.Bundle {
+ 
+ class vueBundle  extends nodefony.Bundle {
 
   constructor (name, kernel, container){
     // Mother Class constructor
@@ -24,4 +25,6 @@ module.exports = class vueBundle  extends nodefony.Bundle {
   *      this.waitBundleReady = true ;
   */
   }
-};
+}
+
+module.exports = vueBundle ;

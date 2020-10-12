@@ -48,9 +48,9 @@
             {% endif %}
             <article class="card-body">
               {% if user and not queryString %}
-                <form name="my-form" action="{{url("nodefony-user-update",{username:user.username})}}" method="POST">
+                <form name="my-form" action="{{url("nodefony-user-update",{username:user.username})}}" method="post">
               {% else %}
-                <form name="my-form" action="{{url("nodefony-user-create",{user:user.username})}}" method="POST">
+                <form name="my-form" action="{{url("nodefony-user-create",{user:user.username})}}" method="post">
               {% endif %}
                 <div class="form-group row">
                   <label for="username" class="col-md-4 col-form-label text-md-right">{{"username"|trans}}</label>
@@ -221,7 +221,7 @@
                       aria-describedby="validationOld">
                     </div>
                     {% endif %}
-                    <label for="passwd">{{"newPasswd"|trans}}</label>
+                    <label for="password">{{"newPasswd"|trans}}</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                           <span class="input-group-text password-button" id="validationNew">
@@ -229,8 +229,8 @@
                           </span>
                         </div>
                         <input
-                        name="passwd"
-                        id="passwd"
+                        name="password"
+                        id="password"
                         type="password"
                         autocomplete="new-password"
                         class="form-control password"
@@ -256,7 +256,7 @@
                       </div>
                     {% endif %}
                   {% else %}
-                    <label for="passwd">{{"createPasswd"|trans}}</label>
+                    <label for="password">{{"createPasswd"|trans}}</label>
                     <div class="input-group">
                       <div class="input-group-prepend">
                         <span class="input-group-text password-button" id="validationPasswd">
@@ -264,8 +264,8 @@
                         </span>
                       </div>
                       <input
-                      name="passwd"
-                      id="passwd"
+                      name="password"
+                      id="password"
                       type="password"
                       autocomplete="new-password"
                       class="form-control password"

@@ -1,26 +1,35 @@
 /**
  *    @Route ("/users")
  */
-module.exports = class usersController extends nodefony.controller {
+class usersController extends nodefony.Controller {
 
   constructor(container, context) {
     super(container, context);
     // start session
     this.startSession();
     // CSRF cross-site request forgery
-    this.setCsrfToken("nodefony_csrf", {
-      secret: "Make him an offer he can't refuse",
-      cookie: {
-        signed: false,
-        secure: true,
-        sameSite: "strict",
-        path: "/users",
-        maxAge: 200
-      }
+    this.setCsrfToken(this.bundle.settings.csrfToken.name, {
+      secret: this.bundle.settings.csrfToken.secret,
+      cookie: this.bundle.settings.csrfToken.cookie
     });
-    this.entity = this.getEntity("user");
-    this.ormName = this.getOrm().name;
     this.translation = this.get("translation");
+    this.usersService = this.get("users");
+
+    this.on("onError", (error, route, variables) => {
+      return this.onError(error, route, variables);
+    });
+  }
+
+  onError(e, route, variables) {
+    try {
+      if (e.errorType === "csrfError") {
+        this.setFlashBag("error", e.message);
+        return this.redirectToRoute("nodefony-user", variables);
+      }
+      throw e;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /**
@@ -80,7 +89,7 @@ module.exports = class usersController extends nodefony.controller {
         if (this.queryGet.roles) {
           this.queryGet.roles = this.queryGet.roles.split(",");
         }
-        this.queryGet.passwd = null;
+        this.queryGet.password = null;
         this.queryGet.confirm = null;
       }
       return this.render("users:users:createUser.html.twig", {
@@ -91,16 +100,16 @@ module.exports = class usersController extends nodefony.controller {
     case "POST":
       // FORM DATA
       let error = null;
-      if (!this.query.passwd || !this.query.confirm) {
+      if (!this.query.password || !this.query.confirm) {
         error = new Error(`Password can't be empty`);
       }
-      if (this.query.passwd !== this.query.confirm) {
+      if (this.query.password !== this.query.confirm) {
         error = new Error(`Bad confirm password`);
       }
       if (error) {
         this.setFlashBag("error", error.message);
         this.logger(error, "ERROR");
-        delete this.query.passwd;
+        delete this.query.password;
         delete this.query.confirm;
         return this.redirectToRoute("nodefony-user-create", {
           queryString: this.query
@@ -110,7 +119,7 @@ module.exports = class usersController extends nodefony.controller {
         this.query.roles = [this.query.roles];
       }
       this.checkAuthorisation(null, this.query);
-      return this.create()
+      return this.usersService.create(this.query)
         .then((user) => {
           let message = `${this.translate("added", "users")} ${user.username}`;
           this.setFlashBag("info", message);
@@ -118,9 +127,10 @@ module.exports = class usersController extends nodefony.controller {
           return this.redirectToRoute("home");
         })
         .catch((error) => {
-          this.setFlashBag("error", error.message);
+          //console.log(error)
           this.logger(error, "ERROR");
-          delete this.query.passwd;
+          this.setFlashBag("error", error.message);
+          delete this.query.password;
           delete this.query.confirm;
           return this.redirectToRoute("nodefony-user-create", {
             queryString: this.query
@@ -132,14 +142,14 @@ module.exports = class usersController extends nodefony.controller {
   }
 
   /**
-   *    @Method ({"GET","POST", "PUT"})
+   *    @Method ({"GET","POST"})
    *    @Route ( "/update/{username}", name="nodefony-user-update")
    */
   updateAction(username) {
     this.checkAuthorisation(username, this.query);
     switch (this.method) {
     case "GET":
-      return this.findOne(username)
+      return this.usersService.findOne(username)
         .then((result) => {
           if (result) {
             return this.render("users:users:createUser.html.twig", {
@@ -152,11 +162,10 @@ module.exports = class usersController extends nodefony.controller {
         }).catch(e => {
           throw e;
         });
-    case "PUT":
     case "POST":
-      return this.findOne(username)
-        .then((user) => {
-          if (user) {
+      return this.usersService.findOne(username)
+        .then(async (myuser) => {
+          if (myuser) {
             if (nodefony.typeOf(this.query.roles) === "string") {
               this.query.roles = [this.query.roles];
             }
@@ -170,34 +179,34 @@ module.exports = class usersController extends nodefony.controller {
               lang: this.query.lang,
               enabled: this.query.enabled
             };
-            if (this.query.passwd && this.isGranted("ROLE_ADMIN")) {
+            if (this.query.password && this.isGranted("ROLE_ADMIN")) {
               let error = null;
-              if (this.query.passwd && this.query.passwd !== this.query.confirm) {
+              if (this.query.password && this.query.password !== this.query.confirm) {
                 error = new Error(`Bad confirm password`);
               }
               if (error) {
                 throw error;
               }
-              value.password = this.query.passwd;
+              value.password = this.query.password;
             } else {
-              if (this.query.passwd && this.query["old-passwd"]) {
+              if (this.query.password && this.query["old-passwd"]) {
                 let encoder = this.getNodefonyEntity("user").getEncoder();
-                let check = encoder.isPasswordValid(this.query["old-passwd"], user.password);
+                let check = await encoder.isPasswordValid(this.query["old-passwd"], myuser.password);
                 if (check) {
-                  value.password = this.query.passwd;
+                  value.password = this.query.password;
                 } else {
                   throw new Error(`User ${username} bad passport`);
                 }
               }
             }
-            return this.update(user, value)
+            return this.usersService.update(myuser, value)
               .then(() => {
                 let message = `Update User ${this.query.username} OK`;
                 this.setFlashBag("info", message);
                 this.logger(message, "INFO");
                 let currentUser = this.getUser();
-                if (user.username === currentUser.username) {
-                  if (this.query.username !== user.username) {
+                if (myuser.username === currentUser.username) {
+                  if (this.query.username !== myuser.username) {
                     currentUser.username = this.query.username;
                   }
                   if (this.getLocale() !== this.query.lang) {
@@ -236,30 +245,25 @@ module.exports = class usersController extends nodefony.controller {
    */
   deleteAction(username) {
     this.checkAuthorisation(username);
-    return this.findOne(username)
-      .then((user) => {
-        if (user) {
-          return this.delete(user)
-            .then((result) => {
-              let message = `Delete User ${result.username} OK`;
-              this.setFlashBag("info", message);
-              if (this.getUser().username === username) {
-                this.session.invalidate();
-              }
-              return this.redirectToRoute("nodefony-user");
-            }).catch(e => {
-              this.logger(e, "ERROR");
-              this.setFlashBag("error", e.message);
-              return this.redirectToRoute("nodefony-user");
-            });
-        }
-        let error = new nodefony.Error(`User ${username} not found`, this.context);
-        this.setFlashBag("error", error.message);
-        this.logger(error, "ERROR");
-        return this.redirectToRoute("nodefony-user");
-      }).catch(e => {
-        throw e;
-      });
+    if (username) {
+      return this.usersService.delete(username)
+        .then((result) => {
+          let message = `Delete User ${result.username} OK`;
+          this.setFlashBag("info", message);
+          if (this.getUser().username === username) {
+            this.session.invalidate();
+          }
+          return this.redirectToRoute("nodefony-user");
+        }).catch(e => {
+          this.logger(e, "ERROR");
+          this.setFlashBag("error", e.message);
+          return this.redirectToRoute("nodefony-user");
+        });
+    }
+    let error = new nodefony.Error(`User ${username} not found`, this.context);
+    this.setFlashBag("error", error.message);
+    this.logger(error, "ERROR");
+    return this.redirectToRoute("nodefony-user");
   }
 
   /**
@@ -275,7 +279,8 @@ module.exports = class usersController extends nodefony.controller {
       case "DELETE":
         return this.deleteAction(username);
       case "GET":
-        return this.findOne(username)
+        //const user = new User(this);
+        return this.usersService.findOne(username)
           .then((result) => {
             if (result) {
               return this.render("users:users:readUsers.html.twig", {
@@ -292,10 +297,10 @@ module.exports = class usersController extends nodefony.controller {
     case "POST":
       return this.createAction();
     default:
-      return this.find()
+      return this.usersService.find()
         .then((result) => {
           return this.render("users:users:readUsers.html.twig", {
-            users: result
+            users: result.rows
           });
         }).catch(e => {
           throw e;
@@ -324,64 +329,6 @@ module.exports = class usersController extends nodefony.controller {
     return true;
   }
 
-  find() {
-    switch (this.ormName) {
-    case "mongoose":
-      return this.entity.find();
-    case "sequelize":
-      return this.entity.findAll();
-    }
-  }
+}
 
-  findOne(username) {
-    switch (this.ormName) {
-    case "mongoose":
-      return this.entity.findOne({
-        username: username
-      });
-    case "sequelize":
-      return this.entity.findOne({
-        where: {
-          username: username
-        }
-      });
-    }
-  }
-
-  update(user, value) {
-    switch (this.ormName) {
-    case "mongoose":
-      return user.updateOne(value);
-    case "sequelize":
-      return user.update(value);
-    }
-  }
-
-  create() {
-    switch (this.ormName) {
-    case "mongoose":
-    case "sequelize":
-      return this.entity.create({
-        username: this.query.username || null,
-        email: this.query.email,
-        password: this.query.passwd,
-        name: this.query.name,
-        surname: this.query.surname,
-        gender: this.query.gender,
-        roles: this.query.roles
-      });
-    }
-  }
-
-  delete(user) {
-    switch (this.ormName) {
-    case "mongoose":
-      return user.remove({
-        force: true
-      });
-    case "sequelize":
-      return user.destroy();
-    }
-  }
-
-};
+module.exports = usersController;

@@ -7,11 +7,11 @@
     "nodefony": "nodefony",
     "pm2": "pm2",
     "start": "nodefony",
+    "dev": "nodefony dev",
     "build": "nodefony build",
     "rebuild": "nodefony rebuild",
     "stop": "nodefony stop",
     "prod": "nodefony prod",
-    "dev": "nodefony dev",
     "kill": "nodefony kill",
     "test": "nodefony test",
     "help": "nodefony -h"
@@ -27,21 +27,24 @@
   "os": [
     "darwin",
     "linux",
-    "freebsd"
+    "freebsd",
+    "win32"
   ],
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "dependencies": {
-    "mongoose": "^5.7.3",
-    "nodefony": "^5.0.9",
-    "sequelize": "^5.19.2",
-    "webpack": "^4.41.0",
-    "webpack-dev-server": "^3.8.2"
+    "mongoose": "^5.10.9",
+    "nodefony": "^6.0.1",
+    "pm2": "^4.5.0",
+    "pm2-logrotate": "^2.7.0",
+    "sequelize": "^6.3.5",
+    "webpack": "^5.0.0",
+    "webpack-dev-server": "^3.11.0"
   },
   "devDependencies": {
-    "node-gyp": "^6.0.0",
-    "node-pre-gyp": "^0.13.0"
+    "node-gyp": "^7.1.0",
+    "node-pre-gyp": "^0.15.0"
   },
   "author": "admin <admin@nodefony.com>",
   "readmeFilename": "README.md",

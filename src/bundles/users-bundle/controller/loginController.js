@@ -1,48 +1,45 @@
-module.exports = class loginController extends nodefony.controller {
+class loginController extends nodefony.controller {
 
   constructor(container, context) {
     super(container, context);
-    this.security = this.get("security");
     this.startSession();
   }
 
   /**
-   *    @Method ({ "GET"})
+   *    @Method ({"POST"})
    *    @Route (
-   *      "/login/{type}",
-   *      name="login",
-   *      defaults={"type" = "nodefony"},
-   *      requirements={"type" = "\w+"}
+   *      "/secure",
+   *      name="secure-login"
    *    )
    */
-  loginAction(type) {
+  secureAction() {
+    return this.loginCheckAction();
+  }
+
+  /**
+   *    @Method ({"GET", "POST"})
+   *    @Route (
+   *      "/login/secure",
+   *      name="login"
+   *    )
+   */
+  loginAction() {
     let token = this.getToken();
     if (this.session && token) {
       return this.redirectToRoute("home");
     }
-    let area = this.security.getSecuredArea(type);
-    let action = "/" + type;
-    if (area && area.checkLogin) {
-      action = area.checkLogin;
-    }
-    let google = this.security.getSecuredArea("google_area") ? true : false;
-    let github = this.security.getSecuredArea("github_area") ? true : false;
-    return this.render("users:login:login.html.twig", {
-      type: type,
-      action: action,
-      google: google,
-      github: github
-    });
+    return this.render("users:login:login.html.twig");
   }
 
   /**
-   *    @Method ({ "POST"})
+   *    @Method ({"POST"})
    *    @Route (
    *      "/login/check",
    *      name="login-check"
    *    )
    */
   loginCheckAction(lastUrl) {
+    //console.log(lastUrl)
     try {
       let token = this.getToken();
       if (token.user && token.user.enabled) {
@@ -51,13 +48,25 @@ module.exports = class loginController extends nodefony.controller {
         }
         return this.redirectToRoute("home");
       } else {
-        this.context.session.invalidate();
-        let error = new nodefony.securityError(
-          `User ${token.user.username}  Désactivé `,
-          401,
-          this.context.security,
-          this.context
-        );
+        this.session.invalidate();
+        let error = null;
+        if (token && !token.user.enabled) {
+          error = new nodefony.securityError(
+            `User ${token.user.username} Disabled `,
+            401,
+            this.context.security,
+            this.context
+          );
+          this.logger(error, "ERROR");
+          this.setFlashBag("error", error.message);
+        } else {
+          error = new nodefony.securityError(
+            `No Auth Token`,
+            401,
+            this.context.security,
+            this.context
+          );
+        }
         this.logger(error, "ERROR");
         this.setFlashBag("error", error.message);
         return this.redirectToRoute("login");
@@ -72,21 +81,15 @@ module.exports = class loginController extends nodefony.controller {
    *    @Route ("/logout", name="logout")
    */
   logoutAction() {
-    if (this.security) {
-      return this.security.logout(this.context)
-        .catch((e) => {
-          throw e;
-        });
-    }
-    if (this.context.session) {
-      return this.context.session.destroy(true)
-        .then(() => {
-          return this.redirectToRoute("login");
-        }).catch(e => {
-          this.logger(e, "ERROR");
-        });
-    }
-    return this.redirectToRoute("login");
+    return this.logout()
+      .then(() => {
+        return this.redirectToRoute("login");
+      }).catch((e) => {
+        this.logger(e, "ERROR");
+        return this.redirectToRoute("login");
+      });
   }
 
-};
+}
+
+module.exports = loginController;

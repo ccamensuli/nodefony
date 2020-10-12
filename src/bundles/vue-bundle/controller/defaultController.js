@@ -6,7 +6,7 @@
  *	@param {class} context
  *  @Route ("/vue")
  */
-module.exports = class defaultController extends nodefony.controller {
+class defaultController extends nodefony.Controller {
 
   constructor(container, context) {
     super(container, context);
@@ -15,7 +15,7 @@ module.exports = class defaultController extends nodefony.controller {
   }
 
 /**
- *    @Route ("",
+ *    @Route ("*",
  *      name="route-vue-bundle-vue")
  */
   indexAction() {
@@ -24,4 +24,6 @@ module.exports = class defaultController extends nodefony.controller {
 			description: this.bundle.package.description    });
 
   }
-};
+}
+
+module.exports = defaultController;

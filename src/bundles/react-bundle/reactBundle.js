@@ -9,7 +9,8 @@
  *	@param {class} container
  *
  */
-module.exports = class reactBundle  extends nodefony.Bundle {
+ 
+ class reactBundle  extends nodefony.Bundle {
 
   constructor (name, kernel, container){
     // Mother Class constructor
@@ -24,4 +25,6 @@ module.exports = class reactBundle  extends nodefony.Bundle {
   *      this.waitBundleReady = true ;
   */
   }
-};
+}
+
+module.exports = reactBundle ;

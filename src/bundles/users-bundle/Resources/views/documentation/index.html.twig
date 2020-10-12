@@ -1,0 +1,25 @@
+{% extends './base.html.twig' %}
+{{trans_default_domain("documentation")}}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="/documentation-bundle/assets/css/documentation.css"/>
+{% endblock %}
+
+{% block body %}
+
+  <div class="container-fluid">
+    <div class="row flex-xl-nowrap">
+      {% include './navbar.html.twig' with {
+        'route' : nodefony.route
+      } %}
+      <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5" style="top: 5rem;">
+        {{readme}}
+      </main>
+    </div>
+  </div>
+
+  {% block javascripts %}
+    <script type="text/javascript" src="/documentation-bundle/assets/js/documentation.js"></script>
+  {% endblock %}
+
+{% endblock %}

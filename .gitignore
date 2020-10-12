@@ -29,11 +29,3 @@ config/certificates/**/*
 /.project
 /.settings
 /nbproject/private/
-
-
-assets
-#**/assets/**
-app/Resources/public/assets/
-src/bundles/react-bundle/Resources/public/assets/
-src/bundles/react-bundle/Resources/public/dist/
-src/bundles/vue-bundle/Resources/public/assets/

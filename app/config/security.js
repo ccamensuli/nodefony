@@ -1,7 +1,7 @@
 /**
  *  Firewall Config  service Security
  **/
-
+ 
 module.exports = {
   security: {
     /**
@@ -14,8 +14,25 @@ module.exports = {
     /**
      *  FIREWALL  PROVIDER
      */
-    providers: {},
-    encoders: {},
+    providers: {
+      anonymous: {
+        anonymous: {
+          provider: "anonymous"
+        }
+      },
+      nodefony: {
+        entity: {
+          name: "user",
+          property: "username"
+        }
+      }
+    },
+    encoders: {
+      user: {
+        algorithm: "bcrypt",
+        saltRounds: 13
+      }
+    },
     /**
      *  FIREWALL  Authorization
      *  Example :
@@ -53,3 +70,4 @@ module.exports = {
     firewalls: {}
   }
 };
+

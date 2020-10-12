@@ -5,7 +5,7 @@
  *	@param {class} container
  *	@param {class} context
  */
-module.exports = class appController extends nodefony.controller {
+class appController extends nodefony.Controller {
 
   constructor(container, context) {
     super(container, context);
@@ -23,4 +23,6 @@ module.exports = class appController extends nodefony.controller {
 			description: this.kernel.package.description    });
 
   }
-};
+}
+
+module.exports = appController;

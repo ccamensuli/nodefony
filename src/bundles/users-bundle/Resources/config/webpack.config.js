@@ -1,10 +1,9 @@
-//const bundleName = path.basename(path.resolve(__dirname, ".."));
-
 const path = require("path");
-//const webpack = require('webpack');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const webpackMerge = require('webpack-merge');
-
+const { merge } = require('webpack-merge');
+const precss = require('precss');
+const autoprefixer = require('autoprefixer');
 
 // Default context <bundle base directory>
 //const context = path.resolve(__dirname, "..", "public");
@@ -25,11 +24,13 @@ if (kernel.environment === "dev") {
 }
 
 
-module.exports = webpackMerge(config, {
+module.exports = merge(config, {
   //context: context,
   target: "web",
   entry: {
-    users:["./Resources/js/users.js"]
+    users: ["./Resources/js/users.js"],
+    swagger: ["./Resources/swagger/swagger.js"],
+    graphiql: ["./Resources/graphiql/graphiql.jsx"]
   },
   output: {
     path: public,
@@ -39,34 +40,47 @@ module.exports = webpackMerge(config, {
     libraryExport: "default"
   },
   externals: {},
-  resolve: {},
+  resolve: {
+    extensions: ['.js', '.json', '.jsx', '.css', '.mjs'],
+    fallback: { "path": false }
+  },
   module: {
     rules: [{
         // BABEL TRANSCODE
-        test: new RegExp("\.es6$|\.js$"),
+        test: /\.(jsx|mjs|js|es6)$/,
         exclude: new RegExp("node_modules"),
         use: [{
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
+            //presets: ['@babel/preset-env', '@babel/preset-react']
+            presets: [
+                 ['@babel/preset-env', {
+                modules: false
+              }],
+                 '@babel/preset-react',
+               ],
           }
         }]
       }, {
-      /*
-       *	JQUERY EXPOSE BROWSER CONTEXT
-       *
-       */
-        test: require.resolve('jquery'),
-        use: [{
-          loader: 'expose-loader',
-          options: 'jQuery'
-        }, {
-          loader: 'expose-loader',
-          options: '$'
-        }]
+        type: 'javascript/auto',
+        test: /\.mjs$/,
+        use: [],
+        include: /node_modules/,
       }, {
-        test: /jquery\..*\.js/,
-        use: "imports-loader?$=jquery,jQuery=jquery,this=>window"
+        test: require.resolve('jquery'),
+        rules: [{
+          loader: 'expose-loader',
+          options: {
+            //expose: ['$', 'jQuery'],
+            exposes: [{
+              globalName: '$',
+              override: true,
+                }, {
+              globalName: 'jQuery',
+              override: true,
+            }]
+          }
+        }]
       }, {
         test: /\.(sa|sc|c)ss$/,
         use: [
@@ -83,7 +97,9 @@ module.exports = webpackMerge(config, {
           }, {
             loader: 'postcss-loader', // Run post css actions
             options: {
-              plugins: () => [require('precss'), require('autoprefixer')]
+              postcssOptions: {
+                plugins: [autoprefixer({}), precss({})]
+              }
             }
           }, {
             loader: "sass-loader",
@@ -103,15 +119,20 @@ module.exports = webpackMerge(config, {
           }
         }]
       }, {
+        test: /\.svg$/,
+        use: [{
+          loader: 'svg-inline-loader'
+        }],
+      }, {
         // IMAGES
         test: /\.(gif|png|jpe?g|svg)$/i,
         use: [{
-            loader: "file-loader",
-            options: {
-              name: "[name].[ext]",
-              publicPath: `${publicPath}/images/`,
-              outputPath: "/images/"
-            }
+          loader: "file-loader",
+          options: {
+            name: "[name].[ext]",
+            publicPath: `${publicPath}/images/`,
+            outputPath: "/images/"
+          }
           }]
       }
     ]
@@ -121,6 +142,12 @@ module.exports = webpackMerge(config, {
       filename: "./css/[name].css",
       allChunks: true
     }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
+      'process.env.GRAPHIQL': JSON.stringify(bundleConfig.graphiql),
+      'process.env.SWAGGER': JSON.stringify(bundleConfig.swagger)
+    })
   ],
   devServer: {
     inline: true,

@@ -7,10 +7,13 @@
   {% else %}
   "code":500,
   {% endif %}
+  {% if error.errorType %}
+  "type":"{{error.errorType}}",
+  {% else %}
+  "type":"Error",
+  {% endif %}
   {% if error.pdu %}
   "pdu":{{ error.pdu }},
-  {% else %}
-  "pdu":null,
   {% endif %}
   "url":"{{error.url }}",
   {% if error.message %}

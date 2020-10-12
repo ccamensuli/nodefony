@@ -1,0 +1,45 @@
+{% extends '../base.html.twig' %}
+
+
+{% block title %}{{title|escape}}{% endblock %}
+
+{% block stylesheets %}
+  <!-- WEBPACK BUNDLE -->
+  <link rel="stylesheet" href="/documentation-bundle/assets/css/documentation.css"/>
+  <link rel='stylesheet' href='{{CDN("stylesheet")}}/users-bundle/assets/css/graphiql.css'/>
+  <style>
+      body {
+        padding: 0;
+        margin: 0;
+        min-height: 100vh;
+      }
+      #root {
+        height: 100vh;
+      }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+{% block header %}
+  {{ render( controller("users:users:header" )) }}
+{% endblock %}
+
+<div class="container-fluid">
+  <div class="row flex-xl-nowrap">
+    {% include '../documentation/navbar.html.twig' %}
+    <main class="col-12 col-md-9 col-xl-8" style="top: 4rem;">
+      <div id="graphiql"></div>
+    </main>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+  <!-- WEBPACK BUNDLE -->
+  <script src='{{CDN("javascript")}}/users-bundle/assets/js/graphiql.js'></script>
+  <script type="text/javascript" src="/documentation-bundle/assets/js/documentation.js"></script>
+
+{% endblock %}

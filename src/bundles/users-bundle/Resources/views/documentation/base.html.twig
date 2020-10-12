@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{nodefony.local|escape}}">
+  <head>
+    {% block head %}{% endblock %}
+    {% block meta %}
+      <meta charset="utf-8">
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="generator" content="Nodefony (https://nodefony.net)">
+      <meta name="keywords" content="web,Framework,realtime,node.js,symfony,javascript,npm,linux">
+      <link rel="icon" type="image/x-icon" href="/app/favicon.ico"/>
+    {% endblock %}
+    {% block description %}
+      <meta name="description" content="Node.js full-stack web framework Symfony Like">
+    {% endblock %}
+    <title>
+      {% block title %}{{nodefony.name|escape}}{% endblock %}
+    </title>
+    {% block stylesheets %}
+      <!-- WEBPACK BUNDLE -->
+      <link rel="stylesheet" href="/documentation-bundle/assets/css/documentation.css"/>
+    {% endblock %}
+  </head>
+  <body>
+    {% block header %}
+      {{ render( controller("documentation:documentation:header" )) }}
+    {% endblock %}
+    {% block body %}{% endblock %}
+    {% block footer %}
+      {{ render( controller("documentation:documentation:footer" )) }}
+    {% endblock %}
+    {% block javascripts %}
+      <!-- WEBPACK BUNDLE -->
+      <script type="text/javascript" src="/documentation-bundle/assets/js/documentation.js"></script>
+    {% endblock %}
+  </body>
+</html>

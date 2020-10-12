@@ -3,9 +3,8 @@ const path = require("path");
 
 const package = require(path.resolve("package.json"));
 const name = package.name;
+const logFile = path.resolve("tmp", `${name}.log`);
 const script = process.argv[1] || "nodefony";
-const logName = `${name}.log`;
-const logFile = path.resolve("tmp", logName);
 
 /**
  * Application configuration section
@@ -23,16 +22,14 @@ module.exports = {
     max_memory_restart: "1024M",
     autorestart: true,
     max_restarts: 10,
+    // Log in one file
     //log_file            : logFile,
-    out_file: logFile,
-    error_file: logFile,
+    // Log in separate files
+    out_file: path.resolve("tmp", `${name}.log`),
+    error_file: path.resolve("tmp", `${name}.error`),
+    // Merge clusters
     merge_logs: true,
     env: {
-      "NODE_ENV": "development",
-      "MODE_START": "PM2",
-      "NODEFONY_DEBUG": true
-    },
-    env_production: {
       "NODE_ENV": "production",
       "MODE_START": "PM2",
       "NODEFONY_DEBUG": false

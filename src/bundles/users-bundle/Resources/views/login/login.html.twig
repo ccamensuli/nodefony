@@ -4,18 +4,16 @@
 {% set error = getFlashBag("error") %}
 {% set info = getFlashBag("info") %}
 
-
 {% block title %}{{trans("login")}}{% endblock %}
 
 {% block body %}
   {% block header %}
     {{ render( controller("users:users:header" )) }}
   {% endblock %}
-  <div class="container text-center mt-8">
+  <div class="container text-center mt-8 nodefony">
     <div class="col-md-12">
       <img class="mb-4" src="{{CDN("image")}}/app/images/app-logo.png" alt="">
       <h1 class="h1 mb-3 font-weight-normal"style="color:#0167b8">{{nodefony.name|upper}}</h1>
-      <h1 class="h3 mb-3 font-weight-normal">{{trans("login")}} {{type|upper}}</h1>
       {% if info %}
         <div class="alert alert-primary dimissible mt-2" role="alert">
           <strong>INFO : </strong> {{info}}
@@ -32,7 +30,7 @@
           </button>
         </div>
       {% endif %}
-      <form class="nodefony-signin" id="login" action="{{action}}" method="POST">
+      <form class="nodefony-signin" id="login" action="{{url("secure-login")}}" method="POST">
         <label for="username" class="sr-only">Username</label>
         <input autocomplete="username" type="text" id="username" name="username" class="form-control" placeholder="username" required="true" autofocus="true">
         <label for="password" class="sr-only">Password</label>
@@ -40,14 +38,6 @@
         <button class="btn btn-lg btn-primary btn-block mt-4" type="submit">{{trans("submit")}}</button>
       </form>
       <a  href="{{url("nodefony-user-create")}}" class="mt-5 mb-3 text-muted">{{"register"|trans}}</a>
-      <p class="mt-5 mb-3 text-muted">
-        {% if github %}
-          <a href="/login/github" class="btn btn-secondary fa fa-github"> &nbsp {{trans("login")}}  with Github</a>
-        {% endif %}
-        {% if google %}
-          <a href="/login/google" class="btn btn-danger fa fa-google">&nbsp {{trans("login")}} with Google</a>
-        {% endif %}
-      </p>
       <p class="mt-3 mb-3 text-muted">© {{nodefony.name}}</p>
     </div>
   </div>

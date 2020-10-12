@@ -9,19 +9,19 @@
  *	@param {class} container
  *
  */
-module.exports = class usersBundle  extends nodefony.Bundle {
+module.exports = class usersBundle extends nodefony.Bundle {
 
-  constructor (name, kernel, container){
+  constructor(name, kernel, container) {
     // Mother Class constructor
-    super( name, kernel, container );
-
-  // Load core bundle library
-  //this.autoLoader.loadDirectory( path.resolve( this.path, "src" ) );
-
- /*
-  *	If you want kernel wait users event <<onReady>>
-  *
-  *      this.waitBundleReady = true ;
-  */
+    super(name, kernel, container);
+    // Load core bundle library
+    switch (this.kernel.getOrm()) {
+    case "sequelize":
+      this.autoLoader.load(path.resolve(this.path, "src", "providers", "sequelize", "userProvider.js"));
+      break;
+    case 'mongoose':
+      this.autoLoader.load(path.resolve(this.path, "src", "providers", "mongoose", "userProvider.js"));
+      break;
+    }
   }
 };

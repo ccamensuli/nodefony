@@ -1,0 +1,17 @@
+{
+  "files": {
+    "static/js/0.chunk.js": "/react-bundle/static/js/0.chunk.js",
+    "static/js/0.chunk.js.map": "/react-bundle/static/js/0.chunk.js.map",
+    "main.js": "/react-bundle/static/js/main.chunk.js",
+    "main.js.map": "/react-bundle/static/js/main.chunk.js.map",
+    "runtime-main.js": "/react-bundle/static/js/bundle.js",
+    "runtime-main.js.map": "/react-bundle/static/js/bundle.js.map",
+    "index.html": "/react-bundle/index.html",
+    "static/media/logo.svg": "/react-bundle/static/media/logo.5d5d9eef.svg"
+  },
+  "entrypoints": [
+    "static/js/bundle.js",
+    "static/js/0.chunk.js",
+    "static/js/main.chunk.js"
+  ]
+}

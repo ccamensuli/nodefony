@@ -3,7 +3,7 @@
  * ===============================================================================
  *      ROUTING BUNDLE vue-bundle
  *
- *  Copyright © /2019     | 
+ *  Copyright © /2020     | 
  *
  * ===============================================================================
  *
@@ -13,11 +13,4 @@
  **/
 
 
-  module.exports = {
-    vue: {
-      pattern: "/vue*",
-      defaults: {
-        controller: "vue-bundle:default:index"
-      }
-    }
-  };
+  module.exports = {};

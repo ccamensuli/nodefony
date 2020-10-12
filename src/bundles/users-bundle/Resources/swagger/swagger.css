@@ -1,0 +1,18 @@
+.swagger-ui .topbar {
+    background: #43853d;
+    /* Old browsers */
+    background: #43853d;
+    /* Old browsers  */
+    background: -moz-linear-gradient(left, #0337ab 0%, #167b87 41%);
+    /* FF3.6+ */
+    background: -webkit-linear-gradient(left, #0337ab 0%, #167b87 41%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left, #0337ab 0%, #167b87 41%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(left, #0337ab 0%, #167b87 41%);
+    /* IE10+ */
+    background: linear-gradient(to right, #0337ab 0%, #167b87 41%);
+    /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0167b8', endColorstr='#0337ab',GradientType=0 );
+    /* IE6-9 */
+}

@@ -6,7 +6,7 @@
  *	@param {class} context
  *  @Route ("/react")
  */
-module.exports = class defaultController extends nodefony.controller {
+class defaultController extends nodefony.Controller {
 
   constructor(container, context) {
     super(container, context);
@@ -15,10 +15,12 @@ module.exports = class defaultController extends nodefony.controller {
   }
 
 /**
- *    @Route ("",
+ *    @Route ("*",
  *      name="route-react-bundle-react")
  */
   indexAction() {
       return this.renderHtmlFile(path.resolve(this.bundle.publicPath, "dist","index.html"));
   }
-};
+}
+
+module.exports = defaultController;
